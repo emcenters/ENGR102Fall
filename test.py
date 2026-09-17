@@ -30,3 +30,4 @@ for amplitude in readings:
         tiers[1] += 1
     else:
         tiers[0] += 1
+
