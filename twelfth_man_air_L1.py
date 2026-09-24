@@ -1,3 +1,15 @@
+# By submitting this assignment, I agree to the following:
+#   "Aggies do not lie, cheat, or steal, or tolerate those who do."
+#   "I have not given or received any unauthorized aid on this assignment."
+#
+# Names:        Rama Patwardhan
+#               Christian Hough
+#               Sanjay Gopi
+#               Emmanuelle Chern
+# Section:      218
+# Assignment:   Mini Project 3 L1
+# Date:         24 September 2026
+
 days = [
     # Day 1 -- 50 records
     'DFWIAHDELPDFWMELPCLLWDFWELPMDFWIAHBCLLELPPIAHDFWWELPCLLMDFWELPMSATELPMIAHDFWGAUSIAHMSATELPMELPSATMELPAUSWIAHSATPCLLAUSMSATDFWPAUSSATBELPCLLPIAHELPPAUSSATBSATDFWDSATCLLMSATDFWMCLLDFWPDFWSATWIAHELPWSATELPPAUSELPBCLLELPWSATELPWDFWELPWCLLDFWPSATIAHPAUSELPGCLLELPCELPCLLCSATIAHBELPCLLPCLLDFWMDFWSATCELPCLLPELPDFWMDFWCLLMSATCLLMAUSCLLMSATDFWCDFWELPPCLLELPM',
@@ -22,22 +34,34 @@ days = [
 ]
 
 # Test Cases: 
-# For a tie: days = ['AUSJEKWAGKWIEDJAKWIEWAKSJDJD]
-# 
+# For a tie: days = ['AUSJEKWAGKWIEDJAKWIEWAKSJDJD'] 
+# Ranking: Weather (W): 2 Deicing (D): 2 Crew Timeout (C): 0 Mechanical (M): 0 
+#   Ground Stop (G): 0 Gate Conflict (P): 0 
+#   Connecting-Flight Backup (B): 0 Software/Scheduling System (S): 0
+# For one 2/8: days = ['AUSJEKDAGKWIEDJAKWIEPAKSJDJP'] 
+# Ranking: Deicing (D): 2 Gate Conflict (P): 2
+#   Weather (W): 0 Crew Timeout (C): 0 Mechanical (M): 0 
+#   Ground Stop (G): 0 Connecting-Flight Backup (B): 0 Software/Scheduling System (S): 0
+# For two days: days = ['AUSJEKWAGKWIEDJAKWIEWAKSJDJD', 'AUSJEKWAGKWIEDJAKWIEWAKSJDJD']
+#   Ranking: Weather (W): 4 Deicing (D): 4 Crew Timeout (C): 0 Mechanical (M): 0 
+#   Ground Stop (G): 0 Gate Conflict (P): 0 
 causes = []
 counts = []
 
+day_list = []
 for day in days:
-    for string_i in range(6, len(day), 7):
-        index = -1
-        if day[string_i] in causes:
-            index = causes.index(day[string_i])
-        else:
-            causes.append(day[string_i])
-            counts.append(0)
-        counts[index] += 1
-print(causes)
-print(counts)
+    for string_i in range(0, len(day), 7):
+        day_list.append(day[string_i:string_i+7])
+
+for day in day_list:
+    index = -1
+    if day[-1] in causes:
+        index = causes.index(day[-1])
+    else:
+        causes.append(day[-1])
+        counts.append(0)
+    counts[index] += 1
+
 
 for i in range(1, len(counts)):
     current = counts[i]
