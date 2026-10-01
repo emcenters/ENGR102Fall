@@ -34,6 +34,9 @@ days = [
 ]
 
 # Test Cases: 
+# Most frequent: days = ['AUSJEKWAGKWIEWJAKWIEWAKSJDJD']
+# Ranking: Weather (W): 3 Deicing (D): 1 Crew Timeout (C): 0 Mechanical (M): 0 
+#   Ground Stop (G): 0 Gate Conflict (P): 0 
 # For a tie: days = ['AUSJEKWAGKWIEDJAKWIEWAKSJDJD'] 
 # Ranking: Weather (W): 2 Deicing (D): 2 Crew Timeout (C): 0 Mechanical (M): 0 
 #   Ground Stop (G): 0 Gate Conflict (P): 0 
@@ -47,7 +50,6 @@ days = [
 #   Ground Stop (G): 0 Gate Conflict (P): 0 
 causes = []
 counts = []
-
 day_list = []
 for day in days:
     for string_i in range(0, len(day), 7):
@@ -104,6 +106,6 @@ weather_types = ["Weather (W)", "Crew Timeout (C)", "Mechanical (M)", "Ground St
                 "Connecting-Flight Backup (B)", "Software/Scheduling System (S)"]
 for i in range(8):
     if printed[i] == 0:
-        print(f"{index}. {weather_types[i]}: 0")
-        index += 1
+        print(f"{num}. {weather_types[i]}: 0")
+        num += 1
     
