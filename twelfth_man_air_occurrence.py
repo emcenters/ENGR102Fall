@@ -92,25 +92,37 @@ def give_cause_name(index_list, cause_list, full_list):
 sorted_fixed_rpn_indexes = sort_list(fixed_rpn[:])
 sorted_normalized_rpn_indexes = sort_list(normalized_rpn[:])
 
-print(f"=== Fixed Occurrence Bands ===")
+print("=== Fixed Occurrence Bands ===")
 ranking_index = 1
 sort_cause_list = give_cause_name(sorted_fixed_rpn_indexes, causes, True)
 for i in sorted_fixed_rpn_indexes:
     print(f"{ranking_index}. {sort_cause_list[i]}: RPN {fixed_rpn[i]}")
     ranking_index += 1
 
-print(f"=== Normalized Occurrence Bands ===")
+print("=== Normalized Occurrence Bands ===")
 ranking_index = 1
 sort_cause_list = give_cause_name(sorted_normalized_rpn_indexes, causes, True)
 for i in sorted_normalized_rpn_indexes:
     print(f"{ranking_index}. {sort_cause_list[i]}: RPN {normalized_rpn[i]}")
     ranking_index += 1
+T3_fixed_indexes = sorted_fixed_rpn_indexes[:3]
+T3_normalized_indexes = sorted_normalized_rpn_indexes[:3]
+for cause in T3_fixed_indexes:
+    if cause in T3_normalized_indexes:
+        T3_normalized_indexes.remove(cause)
+        T3_fixed_indexes.remove(cause)
+if len(T3_fixed_indexes) == 0:
+    T3_fixed_indexes.append("none")
+if len(T3_normalized_indexes) == 0:
+    T3_normalized_indexes.append("none")
 
 print(f"Top cause, fixed bands: {give_cause_name([sorted_fixed_rpn_indexes[0]], causes, False)[0]}")
 print(f"Top cause, normalized bands: {give_cause_name([sorted_normalized_rpn_indexes[0]], causes, False)[0]}")
-print(f"Top cause changed: {"NO" if sorted_fixed_rpn_indexes[0] == sorted_normalized_rpn_indexes[0] else "YES"}")
-print(f"Top 3, fixed only: {", ".join(give_cause_name(sorted_fixed_rpn_indexes[:3], causes, False))}")
-print(f"Top 3, normalized only: {", ".join(give_cause_name(sorted_normalized_rpn_indexes[:3], causes, False))}")
+print(f"Top cause changed: {'NO' if sorted_fixed_rpn_indexes[0] == sorted_normalized_rpn_indexes[0] else 'YES'}")
+print(f"Top 3, fixed only: {', '.join(causes[i] for i in T3_fixed_indexes)}")
+print(f"Top 3, normalized only: {', '.join(causes[i] for i in T3_normalized_indexes)}")
+
+
 # RECOMMENDATION:
 # I think that it would be more important to use the normalized RPN list because then the airline knows what is
 # the most pressing issue to fix in comparsion to others. My answer would change to use the fixed RPN list six 
