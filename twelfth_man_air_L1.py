@@ -48,6 +48,7 @@ days = [
 # For two days: days = ['AUSJEKWAGKWIEDJAKWIEWAKSJDJD', 'AUSJEKWAGKWIEDJAKWIEWAKSJDJD']
 #   Ranking: Weather (W): 4 Deicing (D): 4 Crew Timeout (C): 0 Mechanical (M): 0 
 #   Ground Stop (G): 0 Gate Conflict (P): 0 
+
 causes = []
 counts = []
 day_list = []
@@ -108,4 +109,3 @@ for i in range(8):
     if printed[i] == 0:
         print(f"{num}. {weather_types[i]}: 0")
         num += 1
-    
