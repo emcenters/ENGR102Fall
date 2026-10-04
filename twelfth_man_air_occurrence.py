@@ -1,3 +1,12 @@
+# By submitting this assignment, I agree to the following:
+#   "Aggies do not lie, cheat, or steal, or tolerate those who do."
+#   "I have not given or received any unauthorized aid on this assignment."
+#
+# Names:        Emmanuelle Chern
+# Section:      218
+# Assignment:   Mini Project 3 L4
+# Date:         3 October 2026
+
 # Given data: the 8 causes, how often each occurred, and the Severity/
 # Detection ratings, same for both Occurrence methods below.
 causes = ["W", "C", "M", "G", "D", "P", "B", "S"]
