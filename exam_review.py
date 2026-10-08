@@ -1,3 +1,4 @@
+import math
 def problem_one():
     month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     user_inputs = ["December 12", "January 15", "April 12", "April 25", "April 1"]
@@ -142,24 +143,13 @@ def problem_32():
                                         return
                                     count += 1
 
-# found_combo = False
-# count = 0
-# def recursive_picking(current_combo, correct_combo, index_of_pin_change):
-#     global found_combo
-#     if not found_combo:
-#         for digit in range(10):
-#             if not found_combo:
-#                 current_combo[index_of_pin_change] = digit
-#                 string_current_combo = "".join(str(num) for num in current_combo)
-#                 global count 
-#                 count += 1
-#                 if string_current_combo == correct_combo:
-#                     print(f"Combination found: {string_current_combo}")
-#                     print(f"Number of computations: {count}")
-#                     found_combo = True
-#                 elif index_of_pin_change != 0:
-#                     recursive_picking(current_combo, correct_combo, index_of_pin_change-1)
-#                 else:
-#                     recursive_picking(current_combo, correct_combo, len(current_combo)-1)
-
-problem_32()
+def problem_33():
+    radius = float(input("Enter the radius: "))
+    area = math.pi*radius**2
+    perimeter = 2*math.pi*radius
+    square_length_eq_area = math.sqrt(area)
+    square_length_eq_perimeter = perimeter/4
+    print(f"The circle has area {area:0.2f} and perimeter {perimeter:0.2f}")
+    print(f"A square with equal area has side length {square_length_eq_area:0.2f}")
+    print(f"A square with equal perimeter has side length {square_length_eq_perimeter:0.2f}")
+problem_33()
