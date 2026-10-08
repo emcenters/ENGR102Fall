@@ -19,8 +19,6 @@ detection = [2, 4, 3, 2, 2, 3, 5, 9]
 lowest = min(counts)
 highest = max(counts)
 
-string = 'word'
-string.indexOf
 fixed_rpn = []
 normalized_rpn = []
 for i in range(len(causes)):
