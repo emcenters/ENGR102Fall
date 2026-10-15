@@ -152,4 +152,7 @@ def problem_33():
     print(f"The circle has area {area:0.2f} and perimeter {perimeter:0.2f}")
     print(f"A square with equal area has side length {square_length_eq_area:0.2f}")
     print(f"A square with equal perimeter has side length {square_length_eq_perimeter:0.2f}")
-problem_33()
+
+
+word = ["ablsjdlgkj;lwej", "ablsjdlgkj;lwej", "ablsjdlgkj;lwej"]
+print(word.split(word[0]))
