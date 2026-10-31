@@ -73,6 +73,7 @@ def run_season(et_list, rain_list, capacity, hours=18, eff=0.8, stress_lim=3.9):
     for i in range(len(et_list)):
         Kc = Kc_constants[growth_stage(i+1)]
         water_used = crop_water_use(et_list[i], Kc)
+        
         peak_water_used = max(water_used, peak_water_used)
         water_pumped = 0
         if depletion[i] >= 1:
