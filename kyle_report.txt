@@ -2,7 +2,7 @@ Lease: Field Unit 1 - Kyle
 Months in file: 62
 Lines skipped: 1
 Months used in fit: 54
-Model: q(t) = 9.7 * e^(-0.0345*t)
-Initial rate qi: 9.7 bbl/month
+Model: q(t) = 16118.1 * e^(-0.0345*t)
+Initial rate qi: 16118.1 bbl/month
 Decline rate D: 0.0345 per month
-Forecast at month 84: 0.5 bbl/month
+Forecast at month 84: 887.2 bbl/month

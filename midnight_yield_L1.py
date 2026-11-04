@@ -1,3 +1,26 @@
+# By submitting this assignment, I agree to the following:
+#   "Aggies do not lie, cheat, or steal, or tolerate those who do."
+#   "I have not given or received any unauthorized aid on this assignment."
+#
+# Names:        Emmanuelle Chern
+#               Sophia Holt
+#               Fuman Jiang
+#               Maya Mather
+# Section:      218
+# Assignment:   Midnight Yield L1
+# Date:         3 November 2026
+
+# TEST CASES:
+# TEST forecast(9500, 0.045, 12) -> 5536.1 (rounded)
+# TEST forecast(9500, 0.045, 0) -> 9500.0
+# TEST forecast(192453.45, 0.40023, 54) -> 7.9*10^-05 (rounded)
+# TEST fit_decline_np(range(0, 10), [1866, 16708, 19695, 6054, 9028, 18794, 11224, 9302, 17903, 15801]) -> 6417.5 (rounded), -0.1124 (rounded)
+# TEST read_lease_name("kyle_production.csv") -> Field Unit 1 - Kyle
+
+# BUG: runtime (IndexError) | crashed when making the months list | changed to append to the months list rather than using an index
+# BUG: logic | report said 53 months used in fit | changed the conditional to include month 6 by checking if the month is greater than or equal to rather than only greater than
+# BUG: logic | the total number of months was 0 | changed the month counter that is used to assign month numbers to increase as another line of data from the csv is read
+
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,28 +64,28 @@ def load_production(filename, month_initial = 6, min_rate = 1000):
     3) A month goes into the fit only if it is month 6 or later and its oil value is at least 1,000 bbl'''
     months = []
     rates = []
+    skipped_count = 0
+
     with open(filename) as file:
         split_file = file.readlines()
         split_file = split_file[1:]
         month_counter = 0
         for line in split_file:
             values = line.split(",")
-            months.append(month_counter)
-            rates.append(values[2])
+            try:
+                val = float(values[2])
+                months.append(month_counter)
+                rates.append(val)
+            except:
+                skipped_count += 1
             month_counter += 1
     
     fit_months = []
     fit_rates = []
-    skipped_count = 0
     for i in range(len(months)):
-        try:
-            rate_num = int(rates[i])
-            if i >= month_initial and rate_num >= min_rate:
-                fit_rates.append(rate_num)
-                fit_months.append(months[i])
-                print(months[i], rate_num)
-        except:
-            skipped_count += 1
+        if months[i] >= month_initial and rates[i] >= min_rate:
+            fit_months.append(months[i])
+            fit_rates.append(rates[i])    
     return months, rates, fit_months, fit_rates, skipped_count
 
 def fit_decline_np(months, rates):
@@ -71,8 +94,9 @@ def fit_decline_np(months, rates):
     log_rates = []
     for i in range(len(rates)):
         log_rates.append(math.log(rates[i]))
-    D, qi = np.polyfit(x=months, y=log_rates, deg=1)
-    return qi, -D
+    
+    D, qi = np.polyfit(months, log_rates, 1)
+    return np.exp(qi), -D
 
 def forecast(qi, D, t):
     '''Returns a rate or an array of rates the same length as t.
@@ -96,35 +120,33 @@ def write_report(report_filename, lease_name, file_length, skipped_count, months
         report.write(f"Initial rate qi: {qi:0.1f} bbl/month\n")
         report.write(f"Decline rate D: {D:0.4f} per month\n")
         month_84_pred = forecast(qi, D, t_end)
-        report.write(f"Forecast at month 84: {month_84_pred:0.1f} bbl/month")
+        report.write(f"Forecast at month {t_end}: {month_84_pred:0.1f} bbl/month\n")
 
 def plot_forecast(months, rates, qi, D, t_end = 84):
-    '''plot two charts side by side, with titile, axis label with units, legend
-    1) rates v months as points, with forecast from month0 to t_end as a smooth line
-    2) uses a log scale on the y axis(plt.yscale("log"))'''
+    '''Plots two charts side by side, with a title, axis label with units, and a legend.
+    1) Rates v months as points, with forecast from month 0 to t_end as a smooth line
+    2) Uses a log scale on the y axis(plt.yscale("log"))'''
     plt.subplot(1, 2, 1)
-    plt.scatter(months, rates, color='black', label = 'data')
-    forecast_rate = forecast(qi, D, months) 
-    slope, intercept = np.polyfit(months, forecast_rate, 1)
-    trendline = np.poly1d([slope, intercept])
-    plt.plot(months, trendline(months), color = 'blue', label= "forecast rate")
-    plt.xlabel('months')
-    plt.ylabel('rates (bbl/month)')
-    plt.title('Rate of oil per month')
+    plt.scatter(months, rates, color='black', label = 'Data')
+    forecasted_rates = forecast(qi, D, np.arange(t_end)) 
+    plt.plot(range(t_end), forecasted_rates, color = 'blue', label= "Forecast Oil Rate")
+    plt.xlabel('Months')
+    plt.ylabel('Oil Rates (bbl/month)')
+    plt.title('Rate of Oil per Month')
     plt.legend()
 
     plt.subplot(1, 2, 2)
-    plt.scatter(months, rates, color='black', label = 'data')
+    plt.scatter(months, rates, color='black', label = 'Data')
     plt.yscale("log")
-    qiLog, dLog = fit_decline_np(months, rates)
-    forecast_rate = forecast(qiLog, dLog, range(t_end)) 
-    slope, intercept = np.polyfit(range(t_end), forecast_rate, 1)
-    trendline = np.poly1d([slope, intercept])
-    plt.plot(months, trendline(months), color = 'blue', label= "logged forecast rate")
-    plt.xlabel('months')
-    plt.ylabel('logged rates (bbl/month)')
-    plt.title('Rate of oil per month')
+    forecasted_rates = forecast(qi, D, np.arange(t_end)) 
+    plt.plot(range(t_end), forecasted_rates, color = 'blue', label= "Log of Forecast Oil Rate")
+    plt.xlabel('Months')
+    plt.ylabel('Log of Oil Rates (bbl/month)')
+    plt.title('Rate of Oil per Month')
     plt.legend()
+
+    plt.suptitle("Oils Rates v. Month")
+    plt.tight_layout()
     plt.show()
 
 
@@ -134,14 +156,10 @@ D_tolerance = 0.000001
 months_list, rates_list, fit_months_list, fit_rates_list, skipped_count = load_production("kyle_production.csv")
 
 loop_inter, loop_slope = fit_decline(fit_months_list, fit_rates_list)
-print(loop_slope, loop_inter)
 py_inter, py_slope = fit_decline_np(fit_months_list, fit_rates_list)
-print(py_slope, py_inter)
 
-fits_agree = abs(loop_slope-(-py_slope)) <= qi_tolerance and abs(loop_inter-py_inter) <= D_tolerance
+fits_agree = abs(loop_slope-py_slope) <= D_tolerance and abs(loop_inter-py_inter) <= qi_tolerance
 print(f"Loop and NumPy fits agree: {fits_agree}")
-write_report("kyle_report.txt", read_lease_name("kyle_production.csv"), len(months_list), skipped_count, len(fit_months_list), py_inter, py_slope)
+write_report("kyle_report.txt", read_lease_name("kyle_production.csv"), len(months_list)+skipped_count, skipped_count, len(fit_months_list), py_inter, py_slope)
 plot_forecast(fit_months_list, fit_rates_list, py_inter, py_slope)
-    
-    
-    
+
