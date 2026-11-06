@@ -67,77 +67,64 @@ def fit_decline_np(months, rates):
 def forecast(qi, D, t):
     '''Returns a rate or an array of rates the same length as t.
     Receives the slope, intercept, and months passed.'''
-    if type(t) == int:
-        return qi * np.exp(-(D*t))
-    else:
-        forecasts = []
-        for time in t:
-            forecasts.append(qi * np.exp(-(D*time)))
-        return forecasts
-   
-
-qi_tolerance = 0.01
-D_tolerance = 0.000001
-months_list, rates_list, fit_months_list, fit_rates_list, skipped_count = load_production("kyle_production.csv")
-
-py_inter, py_slope = fit_decline_np(fit_months_list, fit_rates_list)
+    return qi * np.exp(-(D * t))
 
 def midnight_month(qi, D, limit = 500, t_max = 240):
     '''Forecasts months 0 through t_max, compares to the limit at once, and finds the first month below it
     Takes in the intercept(qi) and slope(D) of the line of best fit, and limit to compare to else it defaults to 500. 
     Can take a max amount of months else it defaults to 240. Returns the first month under the limit.'''
-    forecast_list = forecast(qi, D, range(0, t_max))
+    forecast_list = forecast(qi, D, np.array(range(0, t_max)))
     under_limit = np.array(forecast_list) < limit
     if True in under_limit:
-        return np.where(under_limit == True)[0][0]
+        return np.where(under_limit)[0][0]
     return None
 
 def remaining_barrels(qi, D, start, end):
     '''Total forecast barrels from month start up to, but not including, month end. Returns the sum of the forecasts from start month to end month.
     Receives the intercept(qi) and slope(D) and the start and ending month that you want the sum to be for. Returns the sum.'''
-    forecast_list = forecast(qi, D, range(start, end))
-    return sum(forecast_list)
+    forecast_list = forecast(qi, D, np.arange(0, end))
+    total = 0
+    for rate in forecast_list[start:]:
+        total += rate
+    return total
 
 def month_label(m):
     '''Takes in a month number and returns the year and month in the format YYYY-MM.'''
-    year = 2021
-    month = 1
-    for i in range(m):
-        month += 1
-        if month == 13:
-            month %= 12
-            year += 1
+    year = 2021+m//12
+    month = 1+m%12
+    if month > 12:
+        month -= 12
+        year += 1
     return f"{year}-{month:02}"
 
 def write_midnight_report(filename, total_barrels, first_month, qi, D, limit_list):
     '''Writes the report file. Receives the filename, total barrels, first month, qi, D, and list of limits.
     Returns nothing and writes a file.'''
     with open(filename, "w") as report:
-        report.write(f"Produced through the last report: {total_barrels:0.0} bbl\n")
+        report.write(f"Produced through the last report: {int(total_barrels)} bbl\n")
         report.write(f"{'Limit':>5}{'Midnight':>10}{'Date':>9}{'Remaining':>11}{'Total':>8}\n")
         for limit in limit_list:
             midnight = midnight_month(qi, D, limit)
-            date = month_label(midnight)
-            remains = remaining_barrels(qi, D, first_month, midnight)
-            total = total_barrels+remains
-            if midnight_month == None:
-                midnight = "not reached by month 240"
-            report.write(f"{limit:>5}{midnight:>10}{date:>9}{remains:>11.0}{total:>8.0}\n")
+            if midnight == None:
+                report.write(f"{limit:>5}  not reached by month 240\n")
+            else:
+                date = month_label(midnight)
+                remains = remaining_barrels(qi, D, first_month, midnight)
+                total = remains + total_barrels
+                report.write(f"{limit:>5}{midnight:>10}{date:>9}{remains:>11.0f}{total:>8.0f}\n")
 
-def plot_midnight(months, rates, qi, D, midnight, limit=500):
+def plot_midnight(months, rates, qi, D, limit, midnight):
     '''Receives lists of months, rates, and qi, D, midnight month, and a limit to plot 
     the oil production up till midnight'''
     plt.scatter(months, rates, color='black', label = 'Data')
     plt.yscale("log")
-    plt.axhline(limit, color='red', linestyle='--', label='Limit')
-    if midnight == None:
-        plt.axvline(len(months)-1, color='red', linestyle='--', label='Midnight Month')
+    plt.axhline(limit, color='red', linestyle='-', label='Limit')
+    if midnight != None:
+        plt.axvline(midnight, color='red', linestyle='-', label='Midnight Month')
     else:
-        plt.axvline(midnight, color='red', linestyle='--', label='Midnight Month')
-    forecasted_rates = forecast(qi, D, np.arange(midnight)) 
-    if midnight == None:
-        plt.plot(range(0, len(months)-1), forecasted_rates, color = 'blue', label= "Forecasted Rate")
-    else:
+        plt.axvline()
+    forecasted_rates = forecast(qi, D, np.arange(0, midnight)) 
+    if midnight != None:
         plt.plot(range(0, midnight), forecasted_rates, color = 'blue', label= "Forecasted Rate")
     plt.xlabel('Months')
     plt.ylabel('Log of Oil Rates (bbl/month)')
@@ -148,9 +135,12 @@ def plot_midnight(months, rates, qi, D, midnight, limit=500):
     plt.tight_layout()
     plt.show()
 
-total = sum(forecast(py_inter, py_slope, range(0, len(months_list))))
-with open("midnight_report.txt", "w") as report:
-    "empty"
-write_midnight_report("midnight_report.txt", total, len(months_list), py_inter, py_slope, [1000, 500, 300])
-midnight = midnight_month(py_inter, py_slope)
-plot_midnight(fit_months_list, fit_rates_list, py_inter, py_slope, midnight)
+months_list, rates_list, fit_months_list, fit_rates_list, skipped_count = load_production("kyle_production.csv")
+
+py_inter, py_slope = fit_decline_np(fit_months_list, fit_rates_list)
+total_barrels = sum(rates_list)
+limits = [1000, 500, 300]
+write_midnight_report("midnight_report.txt", total_barrels, months_list[-1]+1, py_inter, py_slope, limits)
+for limit in limits:
+    midnight = midnight_month(py_inter, py_slope, limit)
+    plot_midnight(fit_months_list, fit_rates_list, py_inter, py_slope, limit, midnight)

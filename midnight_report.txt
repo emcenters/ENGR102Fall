@@ -1,5 +1,5 @@
-Produced through the last report: 4e+05 bbl
+Produced through the last report: 610475 bbl
 Limit  Midnight     Date  Remaining   Total
- 1000        81  2027-10      3e+04   4e+05
-  500       101  2029-06      4e+04   5e+05
-  300       116  2030-09      5e+04   5e+05
+ 1000        81  2027-10      28840  639315
+  500       101  2029-06      43299  653774
+  300       116  2030-09      49176  659651
